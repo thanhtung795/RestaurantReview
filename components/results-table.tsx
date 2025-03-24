@@ -6,10 +6,19 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Filter, Calendar } from "lucide-react"
+import { Search, Filter, Calendar, Download } from "lucide-react"
 
-// Sample data based on the image
-const evaluationData = [
+// Định nghĩa kiểu dữ liệu cho kết quả đánh giá
+interface EvaluationResult {
+  id: number
+  group: string
+  criteria: string
+  result: string
+  date: string
+}
+
+// Dữ liệu mẫu - trong ứng dụng thực tế, dữ liệu này sẽ được lấy từ API
+const SAMPLE_DATA: EvaluationResult[] = [
   {
     id: 1,
     group: "Nhóm đánh giá",
@@ -76,14 +85,17 @@ const evaluationData = [
 ]
 
 export function ResultsTable() {
+  // State cho từ khóa tìm kiếm
   const [searchTerm, setSearchTerm] = useState("")
 
-  const filteredData = evaluationData.filter(
+  // Lọc dữ liệu dựa trên từ khóa tìm kiếm
+  const filteredData = SAMPLE_DATA.filter(
     (item) =>
       item.criteria.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.result.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
+  // Xác định màu sắc cho kết quả
   const getResultColor = (result: string) => {
     if (
       result.includes("Đạt") ||
@@ -100,10 +112,17 @@ export function ResultsTable() {
     }
   }
 
+  // Xử lý xuất dữ liệu
+  const handleExport = () => {
+    alert("Chức năng xuất dữ liệu sẽ được triển khai sau!")
+  }
+
   return (
     <Card className="overflow-hidden">
+      {/* Thanh công cụ */}
       <div className="p-4 bg-muted/30 border-b">
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          {/* Ô tìm kiếm */}
           <div className="relative w-full md:w-auto">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -114,6 +133,8 @@ export function ResultsTable() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+
+          {/* Các nút chức năng */}
           <div className="flex gap-2 w-full md:w-auto">
             <Button variant="outline" size="sm" className="flex items-center gap-1">
               <Filter className="h-4 w-4" />
@@ -123,10 +144,15 @@ export function ResultsTable() {
               <Calendar className="h-4 w-4" />
               <span>Ngày</span>
             </Button>
+            <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={handleExport}>
+              <Download className="h-4 w-4" />
+              <span>Xuất</span>
+            </Button>
           </div>
         </div>
       </div>
 
+      {/* Bảng dữ liệu */}
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
