@@ -1,220 +1,231 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Progress } from "@/app/components/ui/progress"
-import { Card, CardContent } from "@/app/components/ui/card"
-import { Button } from "@/app/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { Question } from "@/app/components/question"
+import { useState } from "react";
+import Card from "antd/es/card";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, LucideCheck } from "lucide-react";
+import { RatingQuestion } from "@/app/components/rating-question";
+import { TextQuestion } from "@/app/components/text-question";
+import Alert from "@mui/joy/Alert";
+import Steps from "antd/lib/Steps";
+import { Button } from "antd";
 
-// Định nghĩa kiểu dữ liệu cho câu hỏi
-type QuestionType = {
-  id: number
-  type: "rating" | "slider" | "text"
-  question: string
-  required?: boolean
-  options?: {
-    leftLabel?: string
-    rightLabel?: string
-    min?: number
-    max?: number
-    step?: number
-    placeholder?: string
-    minLength?: number
-    maxLength?: number
-  }
-}
-
-// Danh sách câu hỏi - có thể dễ dàng tùy chỉnh
-const QUESTIONS: QuestionType[] = [
-  {
-    id: 1,
-    type: "rating",
-    question: "Câu hỏi 1: Thực đơn hàng ngày đối với Anh/Chị có được thay đổi phong phú không?",
-    required: true,
-    options: {
-      leftLabel: "KHÔNG Phong phú",
-      rightLabel: "RẤT Phong phú",
-    },
-  },
-  {
-    id: 2,
-    type: "rating",
-    question: "Câu hỏi 2: Việc phục vụ Cơm trắng, Canh của nhà ăn như hiện tại Anh/Chị có hài lòng không?",
-    required: true,
-    options: {
-      leftLabel: "KHÔNG Hài lòng",
-      rightLabel: "RẤT Hài lòng",
-    },
-  },
-  {
-    id: 3,
-    type: "rating",
-    question:
-      "Câu hỏi 3: Vui lòng chọn câu trả lời với mức độ HÀI LÒNG từ thấp đến cao (từ 1 đến 5) cho những câu hỏi được đưa ra",
-    required: true,
-    options: {
-      leftLabel: "RẤT KHÔNG Hài lòng",
-      rightLabel: "RẤT Hài lòng",
-    },
-  },
-  {
-    id: 4,
-    type: "rating",
-    question: "Câu hỏi 4: Khi làm thêm giờ, thực đơn và khẩu phần ăn hiện tại có đáp ứng đầy đủ cho Anh/Chị không?",
-    required: true,
-    options: {
-      leftLabel: "KHÔNG ĐỦ",
-      rightLabel: "RẤT ĐẦY ĐỦ",
-    },
-  },
-  {
-    id: 5,
-    type: "rating",
-    question: "Câu hỏi 5: Ý kiến của Anh/Chị về việc vệ sinh an toàn thực phẩm tại nhà ăn có tốt hay không?",
-    required: true,
-    options: {
-      leftLabel: "KHÔNG TỐT",
-      rightLabel: "RẤT TỐT",
-    },
-  },
-  {
-    id: 6,
-    type: "rating",
-    question: "Câu hỏi 6: Anh/Chị có hài lòng với cách phục vụ của nhân viên tại nhà ăn công ty hay không?",
-    required: true,
-    options: {
-      leftLabel: "KHÔNG Hài lòng",
-      rightLabel: "RẤT Hài lòng",
-    },
-  },
-  {
-    id: 7,
-    type: "text",
-    question:
-      "Câu hỏi 7: Anh/Chị có muốn Nhà ăn công ty cắt giảm, bổ sung hay cải thiện các món ăn nào trong Thực đơn không?",
-    required: false,
-    options: {
-      placeholder: "Vui lòng nhập ý kiến của bạn tại đây...",
-    },
-  },
-  {
-    id: 8,
-    type: "slider",
-    question: "Câu hỏi 8: Vui lòng đánh giá khẩu phần ăn nhà hiện tại có đáp ứng đủ cho Anh/Chị không?",
-    required: true,
-    options: {
-      leftLabel: "0 điểm",
-      rightLabel: "5 điểm",
-      min: 0,
-      max: 5,
-      step: 0.5,
-    },
-  },
-]
+const { Step } = Steps;
 
 export function ReviewForm() {
-  // State cho bước hiện tại và câu trả lời
-  const [currentStep, setCurrentStep] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, any>>({})
+  type QuestionType = {
+    id: number;
+    type: "rating" | "text";
+    question: string;
+    options?: {
+      left?: string;
+      right?: string;
+      values?: string[];
+    };
+  };
 
-  // Tính toán số bước và tiến trình
-  const totalSteps = QUESTIONS.length
-  const progress = ((currentStep + 1) / totalSteps) * 100
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, any>>({});
+  const [error, setError] = useState("");
+  const [completed, setCompleted] = useState(false);
 
-  // Câu hỏi hiện tại
-  const currentQuestion = QUESTIONS[currentStep]
+  const questions: QuestionType[] = [
+    {
+      id: 1,
+      type: "rating",
+      question:
+        "Câu hỏi 1: Anh/Chị có hài lòng với định lượng suất ăn của nhà hàng không?",
+      options: {
+        values: ["1", "2", "3", "4", "5"],
+        left: "KHÔNG Phong phú",
+        right: "RẤT Phong phú",
+      },
+    },
+    {
+      id: 2,
+      type: "rating",
+      question:
+        "Câu hỏi 2: Anh/Chị có cảm giác ngon miệng khi thưởng thức món ăn không?",
+      options: {
+        values: ["1", "2", "3", "4", "5"],
+        left: "KHÔNG Hài lòng",
+        right: "RẤT Hài lòng",
+      },
+    },
+    {
+      id: 3,
+      type: "rating",
+      question:
+        "Câu hỏi 3: Anh/Chị có hài lòng với dụng cụ phục vụ suất ăn có đảm bảo vệ sinh không?",
+      options: {
+        values: ["1", "2", "3", "4", "5"],
+        left: "RẤT KHÔNG Hài lòng",
+        right: "RẤT Hài lòng",
+      },
+    },
+    {
+      id: 4,
+      type: "rating",
+      question:
+        "Câu hỏi 4: Khi thưởng thức món ăn, Anh/Chị có hài lòng với thái độ phuc vụ của nhân viên nhà thầu không?",
+      options: {
+        values: ["1", "2", "3", "4", "5"],
+        left: "RẤT KHÔNG Hài lòng",
+        right: "RẤT Hài lòng",
+      },
+    },
+    {
+      id: 5,
+      type: "rating",
+      question:
+        "Câu hỏi 5: Anh/Chị có hài lòng với điều kiện vệ sinh/ thiết bị phục vụ ở nhà ăn không?",
+      options: {
+        values: ["1", "2", "3", "4", "5"],
+        left: "RẤT KHÔNG Hài lòng",
+        right: "RẤT Hài lòng",
+      },
+    },
+    {
+      id: 6,
+      type: "rating",
+      question:
+        "Câu hỏi 6: Thực đơn, vị món ăn và thái độ phục vụ của Nhà Thầu trong ngày có khiến Anh/Chị hài lòng không?",
+      options: {
+        values: ["1", "2", "3", "4", "5"],
+        left: "KHÔNG Hài lòng",
+        right: "RẤT Hài lòng",
+      },
+    },
+    {
+      id: 7,
+      type: "text",
+      question:
+        "Câu hỏi 7: Anh/Chị có muốn Nhà thầu thay đổi thực đơn, cách chế biến món ăn, đề xuất món ăn nào không?",
+    },
+  ];
 
-  // Xử lý khi nhấn nút "Tiếp tục" hoặc "Hoàn thành"
+  const totalSteps = questions.length;
+
   const handleNext = () => {
+    if (
+      questions[currentStep].type === "rating" &&
+      !answers[questions[currentStep].id]
+    ) {
+      setError("Vui lòng chọn một câu trả lời trước khi tiếp tục.");
+      return;
+    }
+    setError("");
     if (currentStep < totalSteps - 1) {
-      // Chuyển đến câu hỏi tiếp theo
-      setCurrentStep(currentStep + 1)
+      setCurrentStep(currentStep + 1);
     } else {
-      // Kiểm tra các câu hỏi bắt buộc
-      const requiredQuestions = QUESTIONS.filter((q) => q.required).map((q) => q.id)
-      const unansweredRequired = requiredQuestions.filter((id) => !answers[id])
-
-      if (unansweredRequired.length > 0) {
-        alert("Vui lòng trả lời tất cả các câu hỏi bắt buộc trước khi gửi đánh giá.")
-        return
-      }
-
-      // Gửi form
-      console.log("Form submitted:", answers)
-
-      // Trong ứng dụng thực tế, bạn sẽ gửi dữ liệu này đến server
-      // Ví dụ:
-      // fetch('/api/submit-review', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(answers),
-      // })
-
-      // Hiển thị thông báo thành công
-      alert("Cảm ơn bạn đã hoàn thành đánh giá!")
-
-      // Reset form để bắt đầu đánh giá mới
-      setAnswers({})
-      setCurrentStep(0)
+      console.log(answers);
+      setCompleted(true);
     }
-  }
+  };
 
-  // Xử lý khi nhấn nút "Quay lại"
   const handlePrevious = () => {
+    setError("");
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
+      setCurrentStep(currentStep - 1);
     }
-  }
+  };
 
-  // Xử lý khi người dùng trả lời câu hỏi
   const handleAnswer = (value: any) => {
-    setAnswers({
-      ...answers,
-      [currentQuestion.id]: value,
-    })
-  }
+    setAnswers({ ...answers, [questions[currentStep].id]: value });
+  };
 
-  // Giá trị mặc định cho câu hỏi hiện tại
-  const getDefaultValue = () => {
-    if (currentQuestion.type === "rating") return answers[currentQuestion.id] || null
-    if (currentQuestion.type === "slider") return answers[currentQuestion.id] || 0
-    return answers[currentQuestion.id] || ""
-  }
-
+  // @ts-ignore
   return (
-    <div className="space-y-6">
-      {/* Hiển thị tiến trình */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">
-          {currentStep + 1}/{totalSteps}
-        </span>
-        <Progress value={progress} className="h-2" />
-      </div>
+    <div className="space-y-6 max-w-xl mx-auto p-4 bg-gray-100 rounded-xl shadow-lg">
+      {completed ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-green-100 p-6 rounded-lg text-center shadow-md"
+        >
+          <LucideCheck size={50} className="text-green-600 mx-auto" />
+          <h2 className="text-xl font-bold text-green-800 mt-2">
+            Cảm ơn bạn đã hoàn thành khảo sát!
+          </h2>
+          <p className="text-gray-700">
+            Phản hồi của bạn rất quan trọng để chúng tôi cải thiện dịch vụ.
+          </p>
+        </motion.div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.4 }}
+          >
+            {error && (
+              <Alert
+                className="mb-4 justify-center w-fit flex mx-auto"
+                color={"danger"}
+              >
+                {error}
+              </Alert>
+            )}
 
-      {/* Card chứa câu hỏi */}
-      <Card className="border-2">
-        <CardContent className="pt-6">
-          <Question
-            question={currentQuestion.question}
-            type={currentQuestion.type}
-            value={getDefaultValue()}
-            onChange={handleAnswer}
-            options={currentQuestion.options}
-          />
-        </CardContent>
-      </Card>
+            <Card className="border-2 p-4">
+              {questions[currentStep].type === "rating" && (
+                <RatingQuestion
+                  question={questions[currentStep].question}
+                  leftLabel={questions[currentStep].options?.left}
+                  rightLabel={questions[currentStep].options?.right}
+                  value={answers[questions[currentStep].id] || null}
+                  onChange={handleAnswer}
+                />
+              )}
+              {questions[currentStep].type === "text" && (
+                <TextQuestion
+                  question={questions[currentStep].question}
+                  value={answers[questions[currentStep].id] || ""}
+                  onChange={handleAnswer}
+                />
+              )}
+            </Card>
+          </motion.div>
+          <Steps
+            rootClassName={"justify-center mx-auto"}
+            current={currentStep}
+            className="mb-4"
+          >
+            {questions.map((q, index) => (
+              <Step key={index} />
+            ))}
+          </Steps>
+        </AnimatePresence>
+      )}
 
-      {/* Nút điều hướng */}
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 0}>
-          <ChevronLeft className="mr-2 h-4 w-4" /> Quay lại
-        </Button>
-        <Button onClick={handleNext}>
-          {currentStep === totalSteps - 1 ? "Hoàn thành" : "Tiếp tục"} <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
+      <div className="flex justify-center">
+        <div className="flex gap-4">
+          <motion.div whileTap={{ scale: 0.9 }}>
+            <Button
+              onClick={handlePrevious}
+              className={"rounded-full"}
+              disabled={currentStep === 0}
+            >
+              <ChevronLeft />
+            </Button>
+          </motion.div>
+          <motion.div whileTap={{ scale: 0.9 }}>
+            <Button
+              onClick={handleNext}
+              className={"rounded-full bg-green-500"}
+            >
+              {currentStep === totalSteps - 1 ? (
+                <LucideCheck />
+              ) : (
+                <ChevronRight />
+              )}
+            </Button>
+          </motion.div>
+        </div>
       </div>
     </div>
-  )
+  );
 }
-
