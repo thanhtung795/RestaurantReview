@@ -3,9 +3,10 @@
 import {useState} from "react";
 import {Steps, Button, Typography, Card} from "antd";
 import {motion, AnimatePresence} from "framer-motion";
-import {ChevronLeft, ChevronRight} from "lucide-react";
+import {ChevronLeft, ChevronRight, LucideCheck} from "lucide-react";
 import {RatingQuestion} from "@/components/rating-question";
 import {TextQuestion} from "@/components/text-question";
+import Alert from "@mui/joy/Alert";
 
 const {Step} = Steps;
 
@@ -24,6 +25,7 @@ export function ReviewForm() {
     const [currentStep, setCurrentStep] = useState(0);
     const [answers, setAnswers] = useState<Record<number, any>>({});
     const [error, setError] = useState("");
+    const [completed, setCompleted] = useState(false);
 
     const questions: QuestionType[] = [
         {
@@ -106,6 +108,9 @@ export function ReviewForm() {
         setError("");
         if (currentStep < totalSteps - 1) {
             setCurrentStep(currentStep + 1);
+        } else {
+            console.log(answers);
+            setCompleted(true);
         }
     };
 
@@ -120,64 +125,78 @@ export function ReviewForm() {
         setAnswers({...answers, [questions[currentStep].id]: value});
     };
 
+    // @ts-ignore
     return (
         <div className="space-y-6 max-w-xl mx-auto p-4 bg-gray-100 rounded-xl shadow-lg">
+            {completed ?
+                (
+                    <motion.div
+                        initial={{opacity: 0, scale: 0.8}}
+                        animate={{opacity: 1, scale: 1}}
+                        transition={{duration: 0.5}}
+                        className="bg-green-100 p-6 rounded-lg text-center shadow-md"
+                    >
+                        <LucideCheck size={50} className="text-green-600 mx-auto"/>
+                        <h2 className="text-xl font-bold text-green-800 mt-2">Cảm ơn bạn đã hoàn thành khảo sát!</h2>
+                        <p className="text-gray-700">Phản hồi của bạn rất quan trọng để chúng tôi cải thiện dịch vụ.</p>
+                    </motion.div>
+                ) : (
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentStep}
+                            initial={{opacity: 0, x: 50}}
+                            animate={{opacity: 1, x: 0}}
+                            exit={{opacity: 0, x: -50}}
+                            transition={{duration: 0.4}}>
+
+                            {error && (
+                                <Alert className="mb-4 justify-center w-fit flex mx-auto"
+                                       color={'danger'}>
+                                    {error}
+                                </Alert>
+                            )}
 
 
-            {error && (
-                <motion.div initial={{scale: 0.9}} animate={{scale: 1}} transition={{duration: 0.2}}>
-                    <Typography
-                        className="text-red-500 font-bold text-sm text-center bg-amber-400 p-2 w-fit mx-auto rounded-lg">
-                        {error}
-                    </Typography>
-                </motion.div>
-            )}
+                            <Card className="border-2 p-4">
+                                {questions[currentStep].type === "rating" && (
+                                    <RatingQuestion
+                                        question={questions[currentStep].question}
+                                        leftLabel={questions[currentStep].options?.left}
+                                        rightLabel={questions[currentStep].options?.right}
+                                        value={answers[questions[currentStep].id] || null}
+                                        onChange={handleAnswer}
+                                    />
+                                )}
+                                {questions[currentStep].type === "text" && (
+                                    <TextQuestion
+                                        question={questions[currentStep].question}
+                                        value={answers[questions[currentStep].id] || ""}
+                                        onChange={handleAnswer}
+                                    />
+                                )}
+                            </Card>
+                        </motion.div>
+                        <Steps rootClassName={"justify-center mx-auto"} current={currentStep} className="mb-4">
+                            {questions.map((q, index) => (
+                                <Step key={index}/>
+                            ))}
+                        </Steps>
+                    </AnimatePresence>
+                )}
 
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={currentStep}
-                    initial={{opacity: 0, x: 50}}
-                    animate={{opacity: 1, x: 0}}
-                    exit={{opacity: 0, x: -50}}
-                    transition={{duration: 0.4}}
-                >
-                    <Card className="border-2 p-4">
-                        {questions[currentStep].type === "rating" && (
-                            <RatingQuestion
-                                question={questions[currentStep].question}
-                                leftLabel={questions[currentStep].options?.left}
-                                rightLabel={questions[currentStep].options?.right}
-                                value={answers[questions[currentStep].id] || null}
-                                onChange={handleAnswer}
-                            />
-                        )}
-                        {questions[currentStep].type === "text" && (
-                            <TextQuestion
-                                question={questions[currentStep].question}
-                                value={answers[questions[currentStep].id] || ""}
-                                onChange={handleAnswer}
-                            />
-                        )}
-                    </Card>
-                </motion.div>
-                <Steps rootClassName={"justify-center mx-auto"} current={currentStep} className="mb-4">
-                    {questions.map((q, index) => (
-                        <Step key={index}/>
-                    ))}
-                </Steps>
-            </AnimatePresence>
-
-            <div className="flex justify-between">
-                <motion.div whileTap={{scale: 0.9}}>
-                    <Button onClick={handlePrevious} disabled={currentStep === 0} icon={<ChevronLeft/>}>
-                        Quay lại
-                    </Button>
-                </motion.div>
-                <motion.div whileTap={{scale: 0.9}}>
-                    <Button onClick={handleNext} type="primary" icon={<ChevronRight/>}>
-                        {currentStep === totalSteps - 1 ? "Hoàn thành" : "Tiếp tục"}
-                    </Button>
-                </motion.div>
+            <div className="flex justify-center">
+                <div className="flex gap-4">
+                    <motion.div whileTap={{scale: 0.9}}>
+                        <Button onClick={handlePrevious} className={"rounded-full"} disabled={currentStep === 0}>
+                            <ChevronLeft/>
+                        </Button>
+                    </motion.div>
+                    <motion.div whileTap={{scale: 0.9}}>
+                        <Button onClick={handleNext} className={"rounded-full bg-green-500"}>
+                            {currentStep === totalSteps - 1 ? <LucideCheck/> : <ChevronRight/>}
+                        </Button>
+                    </motion.div>
+                </div>
             </div>
         </div>
     );
