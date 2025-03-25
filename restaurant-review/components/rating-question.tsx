@@ -19,8 +19,8 @@ export function RatingQuestion({ question, leftLabel, rightLabel, value, onChang
 
   const renderIcon = (index: number, filled: boolean) => {
     const size = "h-10 w-10 md:h-12 md:w-12"
-    const baseClass = "transition-all duration-200"
-    const filledClass = "text-primary"
+    const baseClass = "transition-all duration-200 size-12 md:size-14 hover:scale-105"
+    const filledClass = "text-indigo-600"
     const emptyClass = "text-muted-foreground"
 
     const className = `${baseClass} ${filled ? filledClass : emptyClass}`
@@ -36,7 +36,7 @@ export function RatingQuestion({ question, leftLabel, rightLabel, value, onChang
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-medium text-center text-primary">{question}</h3>
+      <h3 className="text-xl font-medium text-blue-700 text-center text-primary">{question}</h3>
 
       <div className="flex flex-col items-center space-y-8">
         <div className="flex justify-between w-full">

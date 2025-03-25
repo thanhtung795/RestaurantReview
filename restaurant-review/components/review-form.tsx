@@ -1,186 +1,184 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Progress } from "@/components/ui/progress"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { RatingQuestion } from "@/components/rating-question"
-import { SliderQuestion } from "@/components/slider-question"
-import { TextQuestion } from "@/components/text-question"
+import {useState} from "react";
+import {Steps, Button, Typography, Card} from "antd";
+import {motion, AnimatePresence} from "framer-motion";
+import {ChevronLeft, ChevronRight} from "lucide-react";
+import {RatingQuestion} from "@/components/rating-question";
+import {TextQuestion} from "@/components/text-question";
 
-type QuestionType = {
-  id: number
-  type: "rating" | "slider" | "text"
-  question: string
-  options?: {
-    left?: string
-    right?: string
-    values?: string[]
-  }
-}
+const {Step} = Steps;
 
 export function ReviewForm() {
-  const [currentStep, setCurrentStep] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, any>>({})
+    type QuestionType = {
+        id: number;
+        type: "rating" | "text";
+        question: string;
+        options?: {
+            left?: string;
+            right?: string;
+            values?: string[];
+        };
+    };
 
-  const questions: QuestionType[] = [
-    {
-      id: 1,
-      type: "rating",
-      question: "Câu hỏi 1: Thực đơn hàng ngày đối với Anh/Chị có được thay đổi phong phú không?",
-      options: {
-        values: ["1", "2", "3", "4", "5"],
-        left: "KHÔNG Phong phú",
-        right: "RẤT Phong phú",
-      },
-    },
-    {
-      id: 2,
-      type: "rating",
-      question: "Câu hỏi 2: Việc phục vụ Cơm trắng, Canh của nhà ăn như hiện tại Anh/Chị có hài lòng không?",
-      options: {
-        values: ["1", "2", "3", "4", "5"],
-        left: "KHÔNG Hài lòng",
-        right: "RẤT Hài lòng",
-      },
-    },
-    {
-      id: 3,
-      type: "rating",
-      question:
-        "Câu hỏi 3: Vui lòng chọn câu trả lời với mức độ HÀI LÒNG từ thấp đến cao (từ 1 đến 5) cho những câu hỏi được đưa ra",
-      options: {
-        values: ["1", "2", "3", "4", "5"],
-        left: "RẤT KHÔNG Hài lòng",
-        right: "RẤT Hài lòng",
-      },
-    },
-    {
-      id: 4,
-      type: "rating",
-      question: "Câu hỏi 4: Khi làm thêm giờ, thực đơn và khẩu phần ăn hiện tại có đáp ứng đầy đủ cho Anh/Chị không?",
-      options: {
-        values: ["1", "2", "3", "4", "5"],
-        left: "KHÔNG ĐỦ",
-        right: "RẤT ĐẦY ĐỦ",
-      },
-    },
-    {
-      id: 5,
-      type: "rating",
-      question: "Câu hỏi 5: Ý kiến của Anh/Chị về việc vệ sinh an toàn thực phẩm tại nhà ăn có tốt hay không?",
-      options: {
-        values: ["1", "2", "3", "4", "5"],
-        left: "KHÔNG TỐT",
-        right: "RẤT TỐT",
-      },
-    },
-    {
-      id: 6,
-      type: "rating",
-      question: "Câu hỏi 6: Anh/Chị có hài lòng với cách phục vụ của nhân viên tại nhà ăn công ty hay không?",
-      options: {
-        values: ["1", "2", "3", "4", "5"],
-        left: "KHÔNG Hài lòng",
-        right: "RẤT Hài lòng",
-      },
-    },
-    {
-      id: 7,
-      type: "text",
-      question:
-        "Câu hỏi 7: Anh/Chị có muốn Nhà ăn công ty cắt giảm, bổ sung hay cải thiện các món ăn nào trong Thực đơn không?",
-    },
-    {
-      id: 8,
-      type: "slider",
-      question: "Câu hỏi 8: Vui lòng đánh giá khẩu phần ăn nhà hiện tại có đáp ứng đủ cho Anh/Chị không?",
-      options: {
-        left: "0 điểm",
-        right: "5 điểm",
-      },
-    },
-  ]
+    const [currentStep, setCurrentStep] = useState(0);
+    const [answers, setAnswers] = useState<Record<number, any>>({});
+    const [error, setError] = useState("");
 
-  const totalSteps = questions.length
-  const progress = ((currentStep + 1) / totalSteps) * 100
+    const questions: QuestionType[] = [
+        {
+            id: 1,
+            type: "rating",
+            question: "Câu hỏi 1: Anh/Chị có hài lòng với định lượng suất ăn của nhà hàng không?",
+            options: {
+                values: ["1", "2", "3", "4", "5"],
+                left: "KHÔNG Phong phú",
+                right: "RẤT Phong phú",
+            },
+        },
+        {
+            id: 2,
+            type: "rating",
+            question: "Câu hỏi 2: Anh/Chị có cảm giác ngon miệng khi thưởng thức món ăn không?",
+            options: {
+                values: ["1", "2", "3", "4", "5"],
+                left: "KHÔNG Hài lòng",
+                right: "RẤT Hài lòng",
+            },
+        },
+        {
+            id: 3,
+            type: "rating",
+            question:
+                "Câu hỏi 3: Anh/Chị có hài lòng với dụng cụ phục vụ suất ăn có đảm bảo vệ sinh không?",
+            options: {
+                values: ["1", "2", "3", "4", "5"],
+                left: "RẤT KHÔNG Hài lòng",
+                right: "RẤT Hài lòng",
+            },
+        },
+        {
+            id: 4,
+            type: "rating",
+            question: "Câu hỏi 4: Khi thưởng thức món ăn, Anh/Chị có hài lòng với thái độ phuc vụ của nhân viên nhà thầu không?",
+            options: {
+                values: ["1", "2", "3", "4", "5"],
+                left: "RẤT KHÔNG Hài lòng",
+                right: "RẤT Hài lòng",
+            },
+        },
+        {
+            id: 5,
+            type: "rating",
+            question: "Câu hỏi 5: Anh/Chị có hài lòng với điều kiện vệ sinh/ thiết bị phục vụ ở nhà ăn không?",
+            options: {
+                values: ["1", "2", "3", "4", "5"],
+                left: "RẤT KHÔNG Hài lòng",
+                right: "RẤT Hài lòng",
+            },
+        },
+        {
+            id: 6,
+            type: "rating",
+            question: "Câu hỏi 6: Thực đơn, vị món ăn và thái độ phục vụ của Nhà Thầu trong ngày có khiến Anh/Chị hài lòng không?",
+            options: {
+                values: ["1", "2", "3", "4", "5"],
+                left: "KHÔNG Hài lòng",
+                right: "RẤT Hài lòng",
+            },
+        },
+        {
+            id: 7,
+            type: "text",
+            question:
+                "Câu hỏi 7: Anh/Chị có muốn Nhà thầu thay đổi thực đơn, cách chế biến món ăn, đề xuất món ăn nào không?",
+        },
+    ]
 
-  const handleNext = () => {
-    if (currentStep < totalSteps - 1) {
-      setCurrentStep(currentStep + 1)
-    } else {
-      // Submit form
-      console.log("Form submitted:", answers)
-      alert("Cảm ơn bạn đã hoàn thành đánh giá!")
-    }
-  }
 
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
+    const totalSteps = questions.length;
 
-  const handleAnswer = (value: any) => {
-    setAnswers({
-      ...answers,
-      [questions[currentStep].id]: value,
-    })
-  }
+    const handleNext = () => {
+        if (questions[currentStep].type === "rating" && !answers[questions[currentStep].id]) {
+            setError("Vui lòng chọn một câu trả lời trước khi tiếp tục.");
+            return;
+        }
+        setError("");
+        if (currentStep < totalSteps - 1) {
+            setCurrentStep(currentStep + 1);
+        }
+    };
 
-  const currentQuestion = questions[currentStep]
+    const handlePrevious = () => {
+        setError("");
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">
-          {currentStep + 1}/{totalSteps}
-        </span>
-        <Progress value={progress} className="h-2" />
-      </div>
+    const handleAnswer = (value: any) => {
+        setAnswers({...answers, [questions[currentStep].id]: value});
+    };
 
-      <Card className="border-2">
-        <CardContent className="pt-6">
-          {currentQuestion.type === "rating" && (
-            <RatingQuestion
-              question={currentQuestion.question}
-              leftLabel={currentQuestion.options?.left}
-              rightLabel={currentQuestion.options?.right}
-              value={answers[currentQuestion.id] || null}
-              onChange={handleAnswer}
-            />
-          )}
+    return (
+        <div className="space-y-6 max-w-xl mx-auto p-4 bg-gray-100 rounded-xl shadow-lg">
 
-          {currentQuestion.type === "slider" && (
-            <SliderQuestion
-              question={currentQuestion.question}
-              leftLabel={currentQuestion.options?.left}
-              rightLabel={currentQuestion.options?.right}
-              value={answers[currentQuestion.id] || 0}
-              onChange={handleAnswer}
-            />
-          )}
 
-          {currentQuestion.type === "text" && (
-            <TextQuestion
-              question={currentQuestion.question}
-              value={answers[currentQuestion.id] || ""}
-              onChange={handleAnswer}
-            />
-          )}
-        </CardContent>
-      </Card>
+            {error && (
+                <motion.div initial={{scale: 0.9}} animate={{scale: 1}} transition={{duration: 0.2}}>
+                    <Typography
+                        className="text-red-500 font-bold text-sm text-center bg-amber-400 p-2 w-fit mx-auto rounded-lg">
+                        {error}
+                    </Typography>
+                </motion.div>
+            )}
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 0}>
-          <ChevronLeft className="mr-2 h-4 w-4" /> Quay lại
-        </Button>
-        <Button onClick={handleNext}>
-          {currentStep === totalSteps - 1 ? "Hoàn thành" : "Tiếp tục"} <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  )
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={currentStep}
+                    initial={{opacity: 0, x: 50}}
+                    animate={{opacity: 1, x: 0}}
+                    exit={{opacity: 0, x: -50}}
+                    transition={{duration: 0.4}}
+                >
+                    <Card className="border-2 p-4">
+                        {questions[currentStep].type === "rating" && (
+                            <RatingQuestion
+                                question={questions[currentStep].question}
+                                leftLabel={questions[currentStep].options?.left}
+                                rightLabel={questions[currentStep].options?.right}
+                                value={answers[questions[currentStep].id] || null}
+                                onChange={handleAnswer}
+                            />
+                        )}
+                        {questions[currentStep].type === "text" && (
+                            <TextQuestion
+                                question={questions[currentStep].question}
+                                value={answers[questions[currentStep].id] || ""}
+                                onChange={handleAnswer}
+                            />
+                        )}
+                    </Card>
+                </motion.div>
+                <Steps rootClassName={"justify-center mx-auto"} current={currentStep} className="mb-4">
+                    {questions.map((q, index) => (
+                        <Step key={index}/>
+                    ))}
+                </Steps>
+            </AnimatePresence>
+
+            <div className="flex justify-between">
+                <motion.div whileTap={{scale: 0.9}}>
+                    <Button onClick={handlePrevious} disabled={currentStep === 0} icon={<ChevronLeft/>}>
+                        Quay lại
+                    </Button>
+                </motion.div>
+                <motion.div whileTap={{scale: 0.9}}>
+                    <Button onClick={handleNext} type="primary" icon={<ChevronRight/>}>
+                        {currentStep === totalSteps - 1 ? "Hoàn thành" : "Tiếp tục"}
+                    </Button>
+                </motion.div>
+            </div>
+        </div>
+    );
 }
-
