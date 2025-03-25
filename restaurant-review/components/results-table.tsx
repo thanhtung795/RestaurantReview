@@ -1,12 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Search, Filter, Calendar } from "lucide-react"
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/components/ui/table";
+import { Card } from "@/app/components/ui/card";
+import { Badge } from "@/app/components/ui/badge";
+import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { Search, Filter, Calendar } from "lucide-react";
 
 // Sample data based on the image
 const evaluationData = [
@@ -69,20 +76,21 @@ const evaluationData = [
   {
     id: 9,
     group: "Nhóm đánh giá",
-    criteria: "07 - Thực đơn, vị món ăn và thái độ phục vụ của Nhà thầu trong ngày",
+    criteria:
+      "07 - Thực đơn, vị món ăn và thái độ phục vụ của Nhà thầu trong ngày",
     result: "10 - Hài lòng",
     date: "19-01-2024",
   },
-]
+];
 
 export function ResultsTable() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = evaluationData.filter(
     (item) =>
       item.criteria.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.result.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      item.result.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const getResultColor = (result: string) => {
     if (
@@ -92,13 +100,13 @@ export function ResultsTable() {
       result.includes("Hài lòng") ||
       result.includes("Thân thiện")
     ) {
-      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
     } else if (result.includes("Không") || result.includes("Chưa")) {
-      return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+      return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
     } else {
-      return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+      return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
     }
-  }
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -115,11 +123,19 @@ export function ResultsTable() {
             />
           </div>
           <div className="flex gap-2 w-full md:w-auto">
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+            >
               <Filter className="h-4 w-4" />
               <span>Lọc</span>
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+            >
               <Calendar className="h-4 w-4" />
               <span>Ngày</span>
             </Button>
@@ -145,7 +161,10 @@ export function ResultsTable() {
                 <TableCell>{item.group}</TableCell>
                 <TableCell>{item.criteria}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className={getResultColor(item.result)}>
+                  <Badge
+                    variant="outline"
+                    className={getResultColor(item.result)}
+                  >
                     {item.result}
                   </Badge>
                 </TableCell>
@@ -156,6 +175,5 @@ export function ResultsTable() {
         </Table>
       </div>
     </Card>
-  )
+  );
 }
-

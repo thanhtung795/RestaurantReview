@@ -1,5 +1,5 @@
-import { Banner } from "@/components/banner";
-import { ReviewForm } from "@/components/review-form";
+import { Banner } from "@/app/components/banner";
+import { ReviewForm } from "@/app/components/review-form";
 import Link from "next/link";
 
 export default function Home() {
