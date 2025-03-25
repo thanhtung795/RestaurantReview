@@ -3,8 +3,8 @@
 
 export function Banner() {
   return (
-      <div className={"relative"}>
-          <Image src={WebConfig.getBanner} alt={'Banner'} layout={"responsive"} width={1920} height={140} />
+      <div className={"relative h-fit w-full"}>
+          <img src={WebConfig.getBanner} alt={'Banner'} className={"object-fill w-full h-full"} />
       </div>
   )
 }
