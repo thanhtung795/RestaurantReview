@@ -1,66 +1,77 @@
-"use client"
-
-import { useState } from "react"
-import { Heart, Star, ThumbsUp } from "lucide-react"
+import { useState } from "react";
+import { icons } from "../config/WebConfig";
 
 interface RatingQuestionProps {
-  question: string
-  leftLabel?: string
-  rightLabel?: string
-  value: number | null
-  onChange: (value: number) => void
+  question: string;
+  value: string | null;
+  onChange: (value: string) => void;
 }
 
-export function RatingQuestion({ question, leftLabel, rightLabel, value, onChange }: RatingQuestionProps) {
-  const [hoverValue, setHoverValue] = useState<number | null>(null)
+export function RatingQuestion({
+  question,
+  value,
+  onChange,
+}: RatingQuestionProps) {
+  const [hoverValue, setHoverValue] = useState<string | null>(null);
 
-  // Randomly choose an icon type for variety
-  const iconType = question.includes("hài lòng") ? "heart" : question.includes("tốt") ? "star" : "thumbs"
-
-  const renderIcon = (index: number, filled: boolean) => {
-    const size = "h-10 w-10 md:h-12 md:w-12"
-    const baseClass = "transition-all duration-200"
-    const filledClass = "text-primary"
-    const emptyClass = "text-muted-foreground"
-
-    const className = `${baseClass} ${filled ? filledClass : emptyClass}`
-
-    if (iconType === "heart") {
-      return <Heart className={className} fill={filled ? "currentColor" : "none"} />
-    } else if (iconType === "star") {
-      return <Star className={className} fill={filled ? "currentColor" : "none"} />
-    } else {
-      return <ThumbsUp className={className} fill={filled ? "currentColor" : "none"} />
-    }
-  }
+  const ratingOptions = [
+    {
+      label: "Rất không hài lòng",
+      image: icons.ratkhonghailong,
+    },
+    {
+      label: "Không hài lòng",
+      image: icons.khonghailong,
+    },
+    {
+      label: "Bình thường",
+      image: icons.binhthuong,
+    },
+    {
+      label: "Hài lòng",
+      image: icons.hailong,
+    },
+    {
+      label: "Rất hài lòng",
+      image: icons.rathailong,
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-medium text-center text-primary">{question}</h3>
-
-      <div className="flex flex-col items-center space-y-8">
-        <div className="flex justify-between w-full">
-          {leftLabel && <span className="text-sm font-medium text-muted-foreground">{leftLabel}</span>}
-          {rightLabel && <span className="text-sm font-medium text-muted-foreground">{rightLabel}</span>}
-        </div>
-
-        <div className="flex justify-center gap-4 md:gap-8">
-          {[1, 2, 3, 4, 5].map((rating) => (
-            <button
-              key={rating}
-              type="button"
-              className="flex flex-col items-center gap-2"
-              onClick={() => onChange(rating)}
-              onMouseEnter={() => setHoverValue(rating)}
-              onMouseLeave={() => setHoverValue(null)}
+      <h3 className="text-4xl font-medium text-center text-primary">
+        {question}
+      </h3>
+      <div className="flex flex-wrap justify-center gap-4">
+        {ratingOptions.map((option) => (
+          <button
+            key={option.label}
+            onClick={() => onChange(option.label)}
+            onMouseEnter={() => setHoverValue(option.label)}
+            onMouseLeave={() => setHoverValue(null)}
+            className={`flex flex-col items-center p-4 rounded-xl transition-colors duration-200
+              w-[150px] md:w-[120px] flex-1 min-w-[150px] md:min-w-[120px]
+              ${
+                value === option.label
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "hover:bg-gray-100"
+              }
+              ${value === option.label ? "text-white" : "text-gray-700"}`}
+          >
+            <img
+              src={option.image}
+              alt={option.label}
+              className="w-40 h-40 md:w-16 md:h-16 object-contain"
+            />
+            <span
+              className={`mt-2 text-xl font-medium text-center
+              ${value === option.label ? "text-white" : "text-gray-700"}`}
             >
-              {renderIcon(rating, hoverValue !== null ? rating <= hoverValue : rating <= (value || 0))}
-              <span className="text-sm">{rating}</span>
-            </button>
-          ))}
-        </div>
+              {option.label}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
-  )
+  );
 }
-

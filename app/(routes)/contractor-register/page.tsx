@@ -1,1 +1,1 @@
-export {default} from '@/app/pages/Home'
+export {default} from '@/app/pages/ContractorRegister'
