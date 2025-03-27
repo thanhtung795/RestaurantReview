@@ -10,7 +10,7 @@ export default function RestaurantReview() {
       <div className="relative w-full flex flex-col items-center">
         {/* Background */}
         <div
-          className="absolute inset-0 bg-cover bg-center filter blur-md opacity-90 min-h-[740px]"
+          className="absolute inset-0 bg-cover bg-center filter blur-md opacity-80 min-h-[740px]"
           style={{ backgroundImage: `url(${WebConfig.getBackground})` }}
         ></div>
 

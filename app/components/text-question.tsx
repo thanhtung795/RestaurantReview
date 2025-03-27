@@ -11,7 +11,7 @@ interface TextQuestionProps {
 export function TextQuestion({ question, value, onChange }: TextQuestionProps) {
   return (
     <div className="space-y-6">
-      <h3 className="text-3xl font-medium text-center text-primary">{question}</h3>
+      <h3 className="text-3xl font-medium text-center text-blue-900 tracking-tight">{question}</h3>
 
       <Textarea
         placeholder="Vui lòng nhập tại đây..."
