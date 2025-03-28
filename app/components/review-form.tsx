@@ -1,18 +1,12 @@
 "use client";
 
 import {useState} from "react";
-import Card from "antd/es/card";
 import {motion, AnimatePresence} from "framer-motion";
-import {ChevronLeft, ChevronRight, LucideCheck} from "lucide-react";
+import { LucideCheck} from "lucide-react";
 import {RatingQuestion} from "@/app/components/rating-question";
 import {TextQuestion} from "@/app/components/text-question";
-import Alert from "@mui/joy/Alert";
-import Steps from "antd/lib/Steps";
 import {Button} from "./ui/button";
-import {LinearProgress} from "@mui/joy";
 import api from "@/app/config/axiosConfig/AxiosConfig";
-
-const {Step} = Steps;
 
 export function ReviewForm() {
     type QuestionType = {
