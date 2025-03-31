@@ -2,7 +2,7 @@
 
 import {useState} from "react";
 import {motion, AnimatePresence} from "framer-motion";
-import { LucideCheck} from "lucide-react";
+import {LucideCheck} from "lucide-react";
 import {RatingQuestion} from "@/app/components/rating-question";
 import {TextQuestion} from "@/app/components/text-question";
 import {Button} from "./ui/button";
@@ -239,11 +239,17 @@ export function ReviewForm() {
                             transition={{duration: 0.4}}
                             className="min-h-[300px] flex flex-col"
                         >
-                            {/*{error && (*/}
-                            {/*    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-center">*/}
-                            {/*        {error}*/}
-                            {/*    </div>*/}
-                            {/*)}*/}
+                            {error && (
+                                <motion.div
+                                    initial={{opacity: 0}}
+                                    animate={{opacity: 1}}
+                                    exit={{opacity: 0}}
+                                    transition={{duration: 0.4}}
+                                    className="p-2 bg-red-100 text-red-700 rounded-lg text-center"
+                                >
+                                    {error}
+                                </motion.div>
+                            )}
 
                             <div className="flex-1 px-6 py-2 bg-gray-50 rounded-xl">
                                 {questions[currentStep].type === "rating" && (
@@ -263,7 +269,7 @@ export function ReviewForm() {
                             </div>
                         </motion.div>
                     </AnimatePresence>
-            {/* Progress bar */}
+                    {/* Progress bar */}
                     <div className="mb-8">
                         <div className="flex justify-between mb-2">
               <span className="text-sm font-medium">
@@ -317,15 +323,15 @@ export function ReviewForm() {
                     </div>
                 </>
             )}
-            <Modal footer={null} open={isOpen} onCancel={() => setIsOpen(!isOpen)}>
-                <div className="flex flex-col items-center">
-                    <h3 className="text-lg font-bold mb-4">Thông báo</h3>
-                    <p className="mb-6">{error}</p>
-                    <Button onClick={() => setIsOpen(!isOpen)} className="bg-gradient-to-bl from-indigo-500 to-purple-600 text-white">
-                        Đóng
-                    </Button>
-                </div>
-            </Modal>
+            {/*<Modal footer={null} open={isOpen} onCancel={() => setIsOpen(!isOpen)}>*/}
+            {/*    <div className="flex flex-col items-center">*/}
+            {/*        <h3 className="text-lg font-bold mb-4">Thông báo</h3>*/}
+            {/*        <p className="mb-6">{error}</p>*/}
+            {/*        <Button onClick={() => setIsOpen(!isOpen)} className="bg-gradient-to-bl from-indigo-500 to-purple-600 text-white">*/}
+            {/*            Đóng*/}
+            {/*        </Button>*/}
+            {/*    </div>*/}
+            {/*</Modal>*/}
         </div>
     );
 }
