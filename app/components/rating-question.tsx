@@ -40,11 +40,11 @@ export function RatingQuestion({
     //
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4">
             <h3 className="text-3xl font-semibold text-center text-blue-800 tracking-tight">
                 {question}
             </h3>
-            <div className="flex flex-wrap justify-center gap-6 px-4">
+            <div className="flex flex-wrap justify-center gap-4 px-4">
                 {ratingOptions.map((option) => {
                     const isSelected = value === option.label;
                     const isHovered = hoverValue === option.label;
