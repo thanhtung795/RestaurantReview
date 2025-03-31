@@ -7,6 +7,7 @@ import {RatingQuestion} from "@/app/components/rating-question";
 import {TextQuestion} from "@/app/components/text-question";
 import {Button} from "./ui/button";
 import api from "@/app/config/axiosConfig/AxiosConfig";
+import {Modal} from "antd";
 
 export function ReviewForm() {
     type QuestionType = {
@@ -19,7 +20,7 @@ export function ReviewForm() {
             values?: string[];
         };
     };
-
+    const [isOpen, setIsOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [answers, setAnswers] = useState<Record<number, any>>({});
     const [error, setError] = useState("");
@@ -138,6 +139,7 @@ export function ReviewForm() {
             questions[currentStep].type === "rating" &&
             !answers[questions[currentStep].id]
         ) {
+            setIsOpen(!isOpen);
             setError("Vui lòng chọn một câu trả lời trước khi tiếp tục.");
             return;
         }
@@ -185,7 +187,7 @@ export function ReviewForm() {
     };
 
     return (
-        <div className="max-w-[100rem] mx-auto p-6 bg-white rounded-xl shadow-lg">
+        <div className="max-w-[100rem] mx-auto px-6 py-2 bg-white rounded-xl shadow-lg">
             {showConfirmation && (
                 <motion.div
                     initial={{opacity: 0}}
@@ -237,13 +239,13 @@ export function ReviewForm() {
                             transition={{duration: 0.4}}
                             className="min-h-[300px] flex flex-col"
                         >
-                            {error && (
-                                <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-center">
-                                    {error}
-                                </div>
-                            )}
+                            {/*{error && (*/}
+                            {/*    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-center">*/}
+                            {/*        {error}*/}
+                            {/*    </div>*/}
+                            {/*)}*/}
 
-                            <div className="flex-1 p-6 bg-gray-50 rounded-xl">
+                            <div className="flex-1 px-6 py-2 bg-gray-50 rounded-xl">
                                 {questions[currentStep].type === "rating" && (
                                     <RatingQuestion
                                         question={questions[currentStep].question}
@@ -315,6 +317,15 @@ export function ReviewForm() {
                     </div>
                 </>
             )}
+            <Modal footer={null} open={isOpen} onCancel={() => setIsOpen(!isOpen)}>
+                <div className="flex flex-col items-center">
+                    <h3 className="text-lg font-bold mb-4">Thông báo</h3>
+                    <p className="mb-6">{error}</p>
+                    <Button onClick={() => setIsOpen(!isOpen)} className="bg-gradient-to-bl from-indigo-500 to-purple-600 text-white">
+                        Đóng
+                    </Button>
+                </div>
+            </Modal>
         </div>
     );
 }
