@@ -4,7 +4,6 @@ import { ContractorForm } from "@/app/components/contractor-form";
 function ContractorRegister() {
   return (
     <main className="min-h-screen bg-background ">
-      <Banner />
       <div className="relative  w-full h-fit flex flex-col justify-center items-center">
         <div
           className="absolute inset-0 bg-cover bg-center filter blur-8 opacity-80"

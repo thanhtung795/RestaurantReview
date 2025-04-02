@@ -3,7 +3,7 @@ import WebConfig from "@/app/config/WebConfig";
 
 export function Banner() {
   return (
-    <div className={"relative w-full h-[150px]"}>
+    <div className={"relative w-full h-[200px]"}>
       <img
         src={WebConfig.getBanner}
         alt={"Banner"}
